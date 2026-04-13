@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getHistory, clearHistory } from '../services/api';
+import { getHistory, deletePassword } from '../services/api';
 
 export default function Historico() {
   const navigate = useNavigate();
@@ -24,10 +24,10 @@ export default function Historico() {
     carregarHistorico();
   }, []);
 
-  async function handleLimpar() {
+  async function handleExcluir(id) {
     try {
-      await clearHistory();
-      setHistorico([]);
+      await deletePassword(id);
+      setHistorico(prev => prev.filter(item => item.id !== id));
     } catch (err) {
       setError(err.message);
     }
@@ -45,21 +45,22 @@ export default function Historico() {
         ) : historico.length === 0 ? (
           <Text style={styles.emptyText}>Nenhuma senha gerada ainda.</Text>
         ) : (
-          historico.map((item, index) => (
-            <Text key={`${item}-${index}`} style={styles.historyItem}>{item}</Text>
+          historico.map((item) => (
+            <View key={item.id} style={styles.historyRow}>
+              <Text style={styles.historyItem}>{item.password}</Text>
+              <Pressable
+                style={({ pressed, hovered }) => [
+                  styles.deleteBtn,
+                  (pressed || hovered) && styles.deleteBtnActive,
+                ]}
+                onPress={() => handleExcluir(item.id)}
+              >
+                <Text style={styles.deleteBtnText}>Excluir</Text>
+              </Pressable>
+            </View>
           ))
         )}
       </ScrollView>
-
-      <Pressable
-        style={({ pressed, hovered }) => [
-          styles.pressable,
-          (pressed || hovered) && styles.pressableActive,
-        ]}
-        onPress={handleLimpar}
-      >
-        <Text style={styles.buttonText}>Limpar historico</Text>
-      </Pressable>
 
       <Pressable
         style={({ pressed, hovered }) => [
@@ -114,11 +115,31 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 8,
   },
+  historyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
   historyItem: {
+    flex: 1,
     padding: 8,
     borderRadius: 5,
     backgroundColor: '#eef5f3',
     color: '#274740',
+  },
+  deleteBtn: {
+    backgroundColor: '#c0392b',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  deleteBtnActive: {
+    backgroundColor: '#a93226',
+  },
+  deleteBtnText: {
+    color: '#fff',
+    fontSize: 12,
   },
   emptyText: {
     color: '#6d7f79',

@@ -28,13 +28,30 @@ router.post('/generate', authMiddleware, async (req, res) => {
 router.get('/history', authMiddleware, async (req, res) => {
     try {
         const result = await db.query(
-            'SELECT password FROM passwords WHERE user_id = $1 ORDER BY created_at DESC',
+            'SELECT id, password FROM passwords WHERE user_id = $1 AND deleted_at IS NULL ORDER BY created_at DESC',
             [req.userId]
         );
-        return res.json({ history: result.rows.map(r => r.password) });
+        return res.json({ history: result.rows });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Erro ao buscar histórico' });
+    }
+});
+
+router.delete('/:id', authMiddleware, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await db.query(
+            'UPDATE passwords SET deleted_at = NOW() WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL',
+            [id, req.userId]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Senha não encontrada' });
+        }
+        return res.json({ message: 'Senha excluída' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Erro ao excluir senha' });
     }
 });
 

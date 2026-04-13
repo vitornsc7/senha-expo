@@ -43,3 +43,7 @@ export function getHistory() {
 export function clearHistory() {
     return request('/passwords/history', { method: 'DELETE' });
 }
+
+export function deletePassword(id) {
+    return request(`/passwords/${id}`, { method: 'DELETE' });
+}
