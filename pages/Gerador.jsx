@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import { Text, View, Image, Pressable } from 'react-native';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Clipboard from 'expo-clipboard';
@@ -34,59 +34,47 @@ export default function Gerador() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+    <View className="flex-1 bg-white items-center justify-center gap-4">
+      <View className="flex-row items-center justify-center gap-1.5">
         <Image
           source={require('../assets/lock-icon.png')}
-          style={styles.tinyLogo}
+          className="w-6 h-6"
         />
-        <Text style={{ color: '#5c9285', fontSize: 18, fontWeight: 600 }}>Gerador de Senha</Text>
+        <Text className="text-brand text-lg font-semibold">Gerador de Senha</Text>
       </View>
 
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {error ? <Text className="text-red-600 text-[13px]">{error}</Text> : null}
 
-      <View style={{ gap: 6 }}>
-        <Text style={styles.text}>{senha || '—'}</Text>
+      <View className="gap-1.5">
+        <Text className="w-[180px] bg-white rounded border border-brand p-2.5">{senha || '—'}</Text>
 
         <Pressable
-          style={({ pressed, hovered }) => [
-            styles.pressable,
-            (pressed || hovered) && styles.pressableActive,
-          ]}
+          className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 w-[180px] rounded"
           onPress={handleGerarSenha}
           disabled={loading}
         >
-          <Text style={styles.buttonText}>{loading ? 'Gerando...' : 'Gerar senha'}</Text>
+          <Text className="text-white text-center">{loading ? 'Gerando...' : 'Gerar senha'}</Text>
         </Pressable>
 
         <Pressable
+          className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 w-[180px] rounded"
           onPress={copyToClipboard}
-          style={({ pressed, hovered }) => [
-            styles.pressable,
-            (pressed || hovered) && styles.pressableActive,
-          ]}
         >
-          <Text style={styles.buttonText}>Copiar</Text>
+          <Text className="text-white text-center">Copiar</Text>
         </Pressable>
 
         <Pressable
+          className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 w-[180px] rounded"
           onPress={() => navigate('/historico')}
-          style={({ pressed, hovered }) => [
-            styles.pressable,
-            (pressed || hovered) && styles.pressableActive,
-          ]}
         >
-          <Text style={styles.buttonText}>Ver historico</Text>
+          <Text className="text-white text-center">Ver historico</Text>
         </Pressable>
 
         <Pressable
+          className="border border-brand active:bg-brand-light hover:bg-brand-light p-2.5 w-[180px] rounded"
           onPress={handleSignout}
-          style={({ pressed, hovered }) => [
-            styles.pressableOutline,
-            (pressed || hovered) && styles.pressableOutlineActive,
-          ]}
         >
-          <Text style={styles.buttonTextOutline}>Sair</Text>
+          <Text className="text-brand text-center">Sair</Text>
         </Pressable>
       </View>
 
@@ -94,56 +82,3 @@ export default function Gerador() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    gap: 16,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pressable: {
-    backgroundColor: '#5c9285',
-    padding: 10,
-    width: 180,
-    borderRadius: 5,
-  },
-  pressableActive: {
-    backgroundColor: '#4a7a6f',
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-  },
-  text: {
-    width: 180,
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#5c9285',
-  },
-  tinyLogo: {
-    width: 24,
-    height: 24,
-  },
-  error: {
-    color: '#c0392b',
-    fontSize: 13,
-  },
-  pressableOutline: {
-    borderWidth: 1,
-    borderColor: '#5c9285',
-    padding: 10,
-    width: 180,
-    borderRadius: 5,
-  },
-  pressableOutlineActive: {
-    backgroundColor: '#eef5f3',
-  },
-  buttonTextOutline: {
-    color: '#5c9285',
-    textAlign: 'center',
-  },
-});

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
+import { Text, View, Pressable, TextInput } from 'react-native';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signup } from '../services/api';
@@ -26,20 +26,20 @@ export default function Signup() {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Criar conta</Text>
+        <View className="flex-1 bg-white items-center justify-center gap-4">
+            <Text className="text-brand text-xl font-bold">Criar conta</Text>
 
-            {error ? <Text style={styles.error}>{error}</Text> : null}
+            {error ? <Text className="text-red-600 text-[13px]">{error}</Text> : null}
 
-            <View style={styles.form}>
+            <View className="gap-2.5 w-[220px]">
                 <TextInput
-                    style={styles.input}
+                    className="border border-brand rounded p-2.5 w-full"
                     placeholder="Nome"
                     value={name}
                     onChangeText={setName}
                 />
                 <TextInput
-                    style={styles.input}
+                    className="border border-brand rounded p-2.5 w-full"
                     placeholder="Email"
                     value={email}
                     onChangeText={setEmail}
@@ -47,14 +47,14 @@ export default function Signup() {
                     keyboardType="email-address"
                 />
                 <TextInput
-                    style={styles.input}
+                    className="border border-brand rounded p-2.5 w-full"
                     placeholder="Senha"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry
                 />
                 <TextInput
-                    style={styles.input}
+                    className="border border-brand rounded p-2.5 w-full"
                     placeholder="Confirmar senha"
                     value={passwordConfirm}
                     onChangeText={setPasswordConfirm}
@@ -62,70 +62,17 @@ export default function Signup() {
                 />
 
                 <Pressable
-                    style={({ pressed, hovered }) => [
-                        styles.pressable,
-                        (pressed || hovered) && styles.pressableActive,
-                    ]}
+                    className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 rounded"
                     onPress={handleSignup}
                     disabled={loading}
                 >
-                    <Text style={styles.buttonText}>{loading ? 'Criando...' : 'Criar conta'}</Text>
+                    <Text className="text-white text-center">{loading ? 'Criando...' : 'Criar conta'}</Text>
                 </Pressable>
 
-                <Pressable onPress={() => navigate('/signin')} style={styles.link}>
-                    <Text style={styles.linkText}>Já tenho conta</Text>
+                <Pressable className="mt-1" onPress={() => navigate('/signin')}>
+                    <Text className="text-brand text-center underline">Já tenho conta</Text>
                 </Pressable>
             </View>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        gap: 16,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        color: '#5c9285',
-        fontSize: 20,
-        fontWeight: '700',
-    },
-    form: {
-        gap: 10,
-        width: 220,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#5c9285',
-        borderRadius: 5,
-        padding: 10,
-        width: '100%',
-    },
-    pressable: {
-        backgroundColor: '#5c9285',
-        padding: 10,
-        borderRadius: 5,
-    },
-    pressableActive: {
-        backgroundColor: '#4a7a6f',
-    },
-    buttonText: {
-        color: '#fff',
-        textAlign: 'center',
-    },
-    error: {
-        color: '#c0392b',
-        fontSize: 13,
-    },
-    link: {
-        marginTop: 4,
-    },
-    linkText: {
-        color: '#5c9285',
-        textAlign: 'center',
-        textDecorationLine: 'underline',
-    },
-});

@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
+import { Text, View, Pressable, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getHistory, deletePassword } from '../services/api';
@@ -34,28 +34,28 @@ export default function Historico() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Historico de Senhas</Text>
+    <View className="flex-1 bg-white items-center justify-center gap-4">
+      <Text className="text-brand text-xl font-bold">Historico de Senhas</Text>
 
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {error ? <Text className="text-red-600 text-[13px]">{error}</Text> : null}
 
-      <ScrollView style={styles.historyBox} contentContainerStyle={styles.historyContent}>
+      <ScrollView
+        className="w-[280px] max-h-[260px] border border-brand rounded-lg bg-white"
+        contentContainerStyle={{ padding: 10, gap: 8 }}
+      >
         {loading ? (
-          <Text style={styles.emptyText}>Carregando...</Text>
+          <Text className="text-brand-muted">Carregando...</Text>
         ) : historico.length === 0 ? (
-          <Text style={styles.emptyText}>Nenhuma senha gerada ainda.</Text>
+          <Text className="text-brand-muted">Nenhuma senha gerada ainda.</Text>
         ) : (
           historico.map((item) => (
-            <View key={item.id} style={styles.historyRow}>
-              <Text style={styles.historyItem}>{item.password}</Text>
+            <View key={item.id} className="flex-row items-center justify-between gap-2">
+              <Text className="flex-1 p-2 rounded bg-brand-light text-brand-text">{item.password}</Text>
               <Pressable
-                style={({ pressed, hovered }) => [
-                  styles.deleteBtn,
-                  (pressed || hovered) && styles.deleteBtnActive,
-                ]}
+                className="bg-red-600 active:bg-red-700 hover:bg-red-700 py-1.5 px-2.5 rounded"
                 onPress={() => handleExcluir(item.id)}
               >
-                <Text style={styles.deleteBtnText}>Excluir</Text>
+                <Text className="text-white text-xs">Excluir</Text>
               </Pressable>
             </View>
           ))
@@ -63,85 +63,13 @@ export default function Historico() {
       </ScrollView>
 
       <Pressable
-        style={({ pressed, hovered }) => [
-          styles.pressable,
-          (pressed || hovered) && styles.pressableActive,
-        ]}
+        className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 w-[180px] rounded"
         onPress={() => navigate('/')}
       >
-        <Text style={styles.buttonText}>Voltar</Text>
+        <Text className="text-white text-center">Voltar</Text>
       </Pressable>
 
       <StatusBar style="auto" />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    gap: 16,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pressable: {
-    backgroundColor: '#5c9285',
-    padding: 10,
-    width: 180,
-    borderRadius: 5,
-  },
-  pressableActive: {
-    backgroundColor: '#4a7a6f',
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-  },
-  title: {
-    color: '#5c9285',
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  historyBox: {
-    width: 280,
-    maxHeight: 260,
-    borderWidth: 1,
-    borderColor: '#5c9285',
-    borderRadius: 8,
-    backgroundColor: '#fff',
-  },
-  historyContent: {
-    padding: 10,
-    gap: 8,
-  },
-  historyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
-  historyItem: {
-    flex: 1,
-    padding: 8,
-    borderRadius: 5,
-    backgroundColor: '#eef5f3',
-    color: '#274740',
-  },
-  deleteBtn: {
-    backgroundColor: '#c0392b',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-  deleteBtnActive: {
-    backgroundColor: '#a93226',
-  },
-  deleteBtnText: {
-    color: '#fff',
-    fontSize: 12,
-  },
-  emptyText: {
-    color: '#6d7f79',
-  },
-});

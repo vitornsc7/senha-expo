@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
+import { Text, View, Pressable, TextInput } from 'react-native';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signin } from '../services/api';
@@ -25,14 +25,14 @@ export default function Signin() {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Entrar</Text>
+        <View className="flex-1 bg-white items-center justify-center gap-4">
+            <Text className="text-brand text-xl font-bold">Entrar</Text>
 
-            {error ? <Text style={styles.error}>{error}</Text> : null}
+            {error ? <Text className="text-red-600 text-[13px]">{error}</Text> : null}
 
-            <View style={styles.form}>
+            <View className="gap-2.5 w-[220px]">
                 <TextInput
-                    style={styles.input}
+                    className="border border-brand rounded p-2.5 w-full"
                     placeholder="Email"
                     value={email}
                     onChangeText={setEmail}
@@ -40,7 +40,7 @@ export default function Signin() {
                     keyboardType="email-address"
                 />
                 <TextInput
-                    style={styles.input}
+                    className="border border-brand rounded p-2.5 w-full"
                     placeholder="Senha"
                     value={password}
                     onChangeText={setPassword}
@@ -48,70 +48,17 @@ export default function Signin() {
                 />
 
                 <Pressable
-                    style={({ pressed, hovered }) => [
-                        styles.pressable,
-                        (pressed || hovered) && styles.pressableActive,
-                    ]}
+                    className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 rounded"
                     onPress={handleSignin}
                     disabled={loading}
                 >
-                    <Text style={styles.buttonText}>{loading ? 'Entrando...' : 'Entrar'}</Text>
+                    <Text className="text-white text-center">{loading ? 'Entrando...' : 'Entrar'}</Text>
                 </Pressable>
 
-                <Pressable onPress={() => navigate('/signup')} style={styles.link}>
-                    <Text style={styles.linkText}>Criar conta</Text>
+                <Pressable className="mt-1" onPress={() => navigate('/signup')}>
+                    <Text className="text-brand text-center underline">Criar conta</Text>
                 </Pressable>
             </View>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        gap: 16,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        color: '#5c9285',
-        fontSize: 20,
-        fontWeight: '700',
-    },
-    form: {
-        gap: 10,
-        width: 220,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#5c9285',
-        borderRadius: 5,
-        padding: 10,
-        width: '100%',
-    },
-    pressable: {
-        backgroundColor: '#5c9285',
-        padding: 10,
-        borderRadius: 5,
-    },
-    pressableActive: {
-        backgroundColor: '#4a7a6f',
-    },
-    buttonText: {
-        color: '#fff',
-        textAlign: 'center',
-    },
-    error: {
-        color: '#c0392b',
-        fontSize: 13,
-    },
-    link: {
-        marginTop: 4,
-    },
-    linkText: {
-        color: '#5c9285',
-        textAlign: 'center',
-        textDecorationLine: 'underline',
-    },
-});
