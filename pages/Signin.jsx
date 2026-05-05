@@ -2,6 +2,7 @@ import { Text, View, Pressable, TextInput } from 'react-native';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signin } from '../services/api';
+import { setToken } from '../services/tokenStorage';
 
 export default function Signin() {
     const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function Signin() {
         setLoading(true);
         try {
             const { token } = await signin(email, password);
-            localStorage.setItem('token', token);
+            await setToken(token);
             navigate('/');
         } catch (err) {
             setError(err.message);

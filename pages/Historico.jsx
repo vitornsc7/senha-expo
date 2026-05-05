@@ -1,33 +1,53 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, Pressable, ScrollView } from 'react-native';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getHistory, deletePassword } from '../services/api';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import { getLocalPasswords, removeLocalPassword } from '../services/cache';
 
 export default function Historico() {
   const navigate = useNavigate();
+  const isOnline = useNetworkStatus();
   const [historico, setHistorico] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    async function carregarHistorico() {
+  const carregarHistorico = useCallback(async () => {
+    setLoading(true);
+    setError('');
+
+    if (isOnline) {
       try {
         const { history } = await getHistory();
         setHistorico(history);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      } catch {
+        setError('Erro ao carregar histórico.');
       }
+    } else {
+      const local = await getLocalPasswords();
+      setHistorico(local);
     }
-    carregarHistorico();
-  }, []);
 
-  async function handleExcluir(id) {
+    setLoading(false);
+  }, [isOnline]);
+
+  useEffect(() => {
+    carregarHistorico();
+  }, [carregarHistorico]);
+
+  async function handleExcluir(item) {
+    setError('');
     try {
-      await deletePassword(id);
-      setHistorico(prev => prev.filter(item => item.id !== id));
+      if (item.isLocal) {
+        await removeLocalPassword(item.id);
+        setHistorico((prev) => prev.filter((p) => p.id !== item.id));
+      } else if (isOnline) {
+        await deletePassword(item.id);
+        setHistorico((prev) => prev.filter((p) => p.id !== item.id));
+      } else {
+        setError('Sem conexão. Não é possível excluir senhas do servidor agora.');
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -50,10 +70,15 @@ export default function Historico() {
         ) : (
           historico.map((item) => (
             <View key={item.id} className="flex-row items-center justify-between gap-2">
-              <Text className="flex-1 p-2 rounded bg-brand-light text-brand-text">{item.password}</Text>
+              <View className="flex-1">
+                <Text className="p-2 rounded bg-brand-light text-brand-text">{item.password}</Text>
+                {item.isLocal && (
+                  <Text style={{ color: '#b45309', fontSize: 10, marginTop: 1 }}>local</Text>
+                )}
+              </View>
               <Pressable
                 className="bg-red-600 active:bg-red-700 hover:bg-red-700 py-1.5 px-2.5 rounded"
-                onPress={() => handleExcluir(item.id)}
+                onPress={() => handleExcluir(item)}
               >
                 <Text className="text-white text-xs">Excluir</Text>
               </Pressable>

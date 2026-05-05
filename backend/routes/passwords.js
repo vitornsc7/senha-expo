@@ -25,6 +25,34 @@ router.post('/generate', authMiddleware, async (req, res) => {
     }
 });
 
+router.post('/sync', authMiddleware, async (req, res) => {
+    const { passwords } = req.body;
+    if (!Array.isArray(passwords) || passwords.length === 0) {
+        return res.status(400).json({ error: 'Nenhuma senha para sincronizar' });
+    }
+    const MAX_BATCH = 100;
+    if (passwords.length > MAX_BATCH) {
+        return res.status(400).json({ error: `Máximo de ${MAX_BATCH} senhas por sincronização` });
+    }
+    for (const p of passwords) {
+        if (typeof p !== 'string' || p.length === 0 || p.length > 128) {
+            return res.status(400).json({ error: 'Senha inválida na lista' });
+        }
+    }
+
+    try {
+        const placeholders = passwords.map((_, i) => `($1, $${i + 2})`).join(', ');
+        await db.query(
+            `INSERT INTO passwords (user_id, password) VALUES ${placeholders}`,
+            [req.userId, ...passwords]
+        );
+        return res.json({ synced: passwords.length });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Erro ao sincronizar senhas' });
+    }
+});
+
 router.get('/history', authMiddleware, async (req, res) => {
     try {
         const result = await db.query(

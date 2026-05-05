@@ -4,10 +4,25 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Clipboard from 'expo-clipboard';
 import { generatePassword } from '../services/api';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import { addLocalPassword } from '../services/cache';
+import { removeToken } from '../services/tokenStorage';
+
+const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
+
+function gerarSenhaLocal() {
+  let password = '';
+  for (let i = 0; i < 12; i++) {
+    password += CHARS[Math.floor(Math.random() * CHARS.length)];
+  }
+  return password;
+}
 
 export default function Gerador() {
   const navigate = useNavigate();
+  const isOnline = useNetworkStatus();
   const [senha, setSenha] = useState('');
+  const [isLocal, setIsLocal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -15,10 +30,18 @@ export default function Gerador() {
     setError('');
     setLoading(true);
     try {
-      const { password } = await generatePassword();
+      if (isOnline) {
+        const { password } = await generatePassword();
+        setSenha(password);
+        setIsLocal(false);
+      } else {
+        throw new Error('offline');
+      }
+    } catch {
+      const password = gerarSenhaLocal();
+      await addLocalPassword(password);
       setSenha(password);
-    } catch (err) {
-      setError(err.message);
+      setIsLocal(true);
     } finally {
       setLoading(false);
     }
@@ -28,8 +51,8 @@ export default function Gerador() {
     if (senha) await Clipboard.setStringAsync(senha);
   }
 
-  function handleSignout() {
-    localStorage.removeItem('token');
+  async function handleSignout() {
+    await removeToken();
     navigate('/signin');
   }
 
@@ -46,7 +69,12 @@ export default function Gerador() {
       {error ? <Text className="text-red-600 text-[13px]">{error}</Text> : null}
 
       <View className="gap-1.5">
-        <Text className="w-[180px] bg-white rounded border border-brand p-2.5">{senha || '—'}</Text>
+        <View>
+          <Text className="w-[180px] bg-white rounded border border-brand p-2.5">{senha || '—'}</Text>
+          {isLocal && (
+            <Text style={{ color: '#b45309', fontSize: 11, marginTop: 2 }}>gerada offline (local)</Text>
+          )}
+        </View>
 
         <Pressable
           className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 w-[180px] rounded"

@@ -1,11 +1,9 @@
+import { getToken } from './tokenStorage';
+
 const BASE_URL = 'http://localhost:3001';
 
-function getToken() {
-    return localStorage.getItem('token');
-}
-
 async function request(path, options = {}) {
-    const token = getToken();
+    const token = await getToken();
     const headers = {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -46,4 +44,11 @@ export function clearHistory() {
 
 export function deletePassword(id) {
     return request(`/passwords/${id}`, { method: 'DELETE' });
+}
+
+export function syncPasswords(passwords) {
+    return request('/passwords/sync', {
+        method: 'POST',
+        body: JSON.stringify({ passwords }),
+    });
 }
