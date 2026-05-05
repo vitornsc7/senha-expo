@@ -62,6 +62,7 @@ export default function Gerador() {
         <Image
           source={require('../assets/lock-icon.png')}
           className="w-6 h-6"
+          style={{ width: 24, height: 24 }}
         />
         <Text className="text-brand text-lg font-semibold">Gerador de Senha</Text>
       </View>
