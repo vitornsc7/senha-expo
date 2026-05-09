@@ -1,10 +1,5 @@
 import { useState, useEffect } from 'react';
 
-/**
- * Detecta o status de rede usando navigator.onLine (web / Expo Web).
- * No caso de falha silenciosa da API, o try/catch nos componentes
- * também aciona o modo offline.
- */
 export function useNetworkStatus() {
     const [isOnline, setIsOnline] = useState(
         typeof navigator !== 'undefined' ? navigator.onLine : true

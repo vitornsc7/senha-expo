@@ -4,8 +4,6 @@ const KEYS = {
     LOCAL_PASSWORDS: '@local_passwords',
 };
 
-// ── Senhas geradas offline (locais) ──────────────────────────────
-
 export async function getLocalPasswords() {
     try {
         const raw = await AsyncStorage.getItem(KEYS.LOCAL_PASSWORDS);

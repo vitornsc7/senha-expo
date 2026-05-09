@@ -7,12 +7,12 @@ import Signin from './pages/Signin.jsx';
 import Signup from './pages/Signup.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
-import { getLocalPasswords, clearLocalPasswords } from './services/cache';
-import { syncPasswords } from './services/api';
+import { usePasswordStore } from './stores/usePasswordStore';
 
 export default function App() {
   const isOnline = useNetworkStatus();
   const prevOnline = useRef(null);
+  const syncPending = usePasswordStore((s) => s.syncPending);
 
   useEffect(() => {
     if (!isOnline) {
@@ -23,26 +23,14 @@ export default function App() {
     if (prevOnline.current === true) return;
     prevOnline.current = true;
 
-    async function syncPendingPasswords() {
-      const local = await getLocalPasswords();
-      if (local.length === 0) return;
-      try {
-        await syncPasswords(local.map((p) => p.password));
-        await clearLocalPasswords();
-      } catch {
-      }
-    }
-
-    syncPendingPasswords();
+    syncPending();
   }, [isOnline]);
 
   return (
     <BrowserRouter>
       {!isOnline && (
-        <View className="absolute top-0 left-0 right-0 z-[999] bg-amber-700 py-1.5 items-center">
-          <Text className="text-white text-xs font-semibold">
-            Você está offline — senhas geradas serão sincronizadas ao reconectar
-          </Text>
+        <View className="absolute bottom-0 left-0 right-0 z-[999] bg-gray-300 py-1.5 flex-row items-center justify-center gap-1.5">
+          <Text className="text-gray-500 text-[11px]">offline — dados serão sincronizados ao reconectar</Text>
         </View>
       )}
       <Routes>
