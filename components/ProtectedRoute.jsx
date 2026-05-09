@@ -1,18 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { View } from 'react-native';
 import { Navigate } from 'react-router-dom';
-import { getToken } from '../services/tokenStorage';
+import { useAuthStore } from '../stores/useAuthStore';
 
 export default function ProtectedRoute({ children }) {
-    const [status, setStatus] = useState('loading'); // 'loading' | 'authed' | 'unauthed'
+    const { isAuthenticated, isInitialized, initialize } = useAuthStore();
 
     useEffect(() => {
-        getToken().then(token => {
-            setStatus(token ? 'authed' : 'unauthed');
-        });
-    }, []);
+        if (!isInitialized) initialize();
+    }, [isInitialized]);
 
-    if (status === 'loading') return <View />;
-    if (status === 'unauthed') return <Navigate to="/signin" replace />;
+    if (!isInitialized) return <View />;
+    if (!isAuthenticated) return <Navigate to="/signin" replace />;
     return children;
 }
