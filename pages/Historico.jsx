@@ -1,56 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, Pressable, ScrollView } from 'react-native';
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getHistory, deletePassword } from '../services/api';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
-import { getLocalPasswords, removeLocalPassword } from '../services/cache';
+import { usePasswordStore } from '../stores/usePasswordStore';
 
 export default function Historico() {
   const navigate = useNavigate();
   const isOnline = useNetworkStatus();
-  const [historico, setHistorico] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  const carregarHistorico = useCallback(async () => {
-    setLoading(true);
-    setError('');
-
-    if (isOnline) {
-      try {
-        const { history } = await getHistory();
-        setHistorico(history);
-      } catch {
-        setError('Erro ao carregar histórico.');
-      }
-    } else {
-      const local = await getLocalPasswords();
-      setHistorico(local);
-    }
-
-    setLoading(false);
-  }, [isOnline]);
+  const { history, historyLoading, error, loadHistory, deleteItem } = usePasswordStore();
 
   useEffect(() => {
-    carregarHistorico();
-  }, [carregarHistorico]);
+    loadHistory(isOnline);
+  }, [isOnline]);
 
   async function handleExcluir(item) {
-    setError('');
-    try {
-      if (item.isLocal) {
-        await removeLocalPassword(item.id);
-        setHistorico((prev) => prev.filter((p) => p.id !== item.id));
-      } else if (isOnline) {
-        await deletePassword(item.id);
-        setHistorico((prev) => prev.filter((p) => p.id !== item.id));
-      } else {
-        setError('Sem conexão. Não é possível excluir senhas do servidor agora.');
-      }
-    } catch (err) {
-      setError(err.message);
-    }
+    await deleteItem(item, isOnline);
   }
 
   return (
@@ -63,12 +28,12 @@ export default function Historico() {
         className="w-[280px] max-h-[260px] border border-brand rounded-lg bg-white"
         contentContainerStyle={{ padding: 10, gap: 8 }}
       >
-        {loading ? (
+        {historyLoading ? (
           <Text className="text-brand-muted">Carregando...</Text>
-        ) : historico.length === 0 ? (
+        ) : history.length === 0 ? (
           <Text className="text-brand-muted">Nenhuma senha gerada ainda.</Text>
         ) : (
-          historico.map((item) => (
+          history.map((item) => (
             <View key={item.id} className="flex-row items-center justify-between gap-2">
               <View className="flex-1">
                 <Text className="p-2 rounded bg-brand-light text-brand-text">{item.password}</Text>
