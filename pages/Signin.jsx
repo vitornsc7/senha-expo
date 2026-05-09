@@ -1,11 +1,11 @@
 import { Text, View, Pressable, TextInput } from 'react-native';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signin } from '../services/api';
-import { setToken } from '../services/tokenStorage';
+import { useAuthStore } from '../stores/useAuthStore';
 
 export default function Signin() {
     const navigate = useNavigate();
+    const signIn = useAuthStore((s) => s.signIn);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -15,8 +15,7 @@ export default function Signin() {
         setError('');
         setLoading(true);
         try {
-            const { token } = await signin(email, password);
-            await setToken(token);
+            await signIn(email, password);
             navigate('/');
         } catch (err) {
             setError(err.message);
