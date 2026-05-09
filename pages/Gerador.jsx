@@ -1,58 +1,27 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, Image, Pressable } from 'react-native';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Clipboard from 'expo-clipboard';
-import { generatePassword } from '../services/api';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
-import { addLocalPassword } from '../services/cache';
-import { removeToken } from '../services/tokenStorage';
-
-const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
-
-function gerarSenhaLocal() {
-  let password = '';
-  for (let i = 0; i < 12; i++) {
-    password += CHARS[Math.floor(Math.random() * CHARS.length)];
-  }
-  return password;
-}
+import { usePasswordStore } from '../stores/usePasswordStore';
+import { useAuthStore } from '../stores/useAuthStore';
 
 export default function Gerador() {
   const navigate = useNavigate();
   const isOnline = useNetworkStatus();
-  const [senha, setSenha] = useState('');
-  const [isLocal, setIsLocal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { currentPassword, isCurrentLocal, generateLoading, error, generate } = usePasswordStore();
+  const signOut = useAuthStore((s) => s.signOut);
 
   async function handleGerarSenha() {
-    setError('');
-    setLoading(true);
-    try {
-      if (isOnline) {
-        const { password } = await generatePassword();
-        setSenha(password);
-        setIsLocal(false);
-      } else {
-        throw new Error('offline');
-      }
-    } catch {
-      const password = gerarSenhaLocal();
-      await addLocalPassword(password);
-      setSenha(password);
-      setIsLocal(true);
-    } finally {
-      setLoading(false);
-    }
+    await generate(isOnline);
   }
 
   async function copyToClipboard() {
-    if (senha) await Clipboard.setStringAsync(senha);
+    if (currentPassword) await Clipboard.setStringAsync(currentPassword);
   }
 
   async function handleSignout() {
-    await removeToken();
+    await signOut();
     navigate('/signin');
   }
 
@@ -71,18 +40,15 @@ export default function Gerador() {
 
       <View className="gap-1.5">
         <View>
-          <Text className="w-[180px] bg-white rounded border border-brand p-2.5">{senha || '—'}</Text>
-          {isLocal && (
-            <Text style={{ color: '#b45309', fontSize: 11, marginTop: 2 }}>gerada offline (local)</Text>
-          )}
+          <Text className="w-[180px] bg-white rounded border border-brand p-2.5">{currentPassword || '—'}</Text>
         </View>
 
         <Pressable
           className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 w-[180px] rounded"
           onPress={handleGerarSenha}
-          disabled={loading}
+          disabled={generateLoading}
         >
-          <Text className="text-white text-center">{loading ? 'Gerando...' : 'Gerar senha'}</Text>
+          <Text className="text-white text-center">{generateLoading ? 'Gerando...' : 'Gerar senha'}</Text>
         </Pressable>
 
         <Pressable
