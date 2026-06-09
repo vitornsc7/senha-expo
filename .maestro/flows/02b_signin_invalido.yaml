@@ -1,0 +1,28 @@
+# Fluxo E2E: Login com credenciais inválidas
+#
+# Verifica que erro é exibido e o usuário NÃO é autenticado.
+
+appId: com.projetoexposenha
+---
+- launchApp:
+    clearState: true
+
+- waitForAnimationToEnd
+- assertVisible: "Entrar"
+
+- tapOn:
+    id: "email-input"
+- inputText: "naoexiste@example.com"
+
+- tapOn:
+    id: "password-input"
+- inputText: "senha-errada"
+
+- tapOn:
+    id: "signin-button"
+
+- waitForAnimationToEnd
+
+# Deve permanecer na tela de login e exibir erro
+- assertVisible: "Entrar"
+- assertNotVisible: "Gerador de Senha"

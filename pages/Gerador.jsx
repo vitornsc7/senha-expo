@@ -40,10 +40,11 @@ export default function Gerador() {
 
       <View className="gap-1.5">
         <View>
-          <Text className="w-[180px] bg-white rounded border border-brand p-2.5">{currentPassword || '—'}</Text>
+          <Text testID="current-password" className="w-[180px] bg-white rounded border border-brand p-2.5">{currentPassword || '—'}</Text>
         </View>
 
         <Pressable
+          testID="generate-button"
           className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 w-[180px] rounded"
           onPress={handleGerarSenha}
           disabled={generateLoading}
@@ -52,6 +53,7 @@ export default function Gerador() {
         </Pressable>
 
         <Pressable
+          testID="copy-button"
           className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 w-[180px] rounded"
           onPress={copyToClipboard}
         >
@@ -59,6 +61,7 @@ export default function Gerador() {
         </Pressable>
 
         <Pressable
+          testID="history-button"
           className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 w-[180px] rounded"
           onPress={() => navigate('/historico')}
         >
@@ -66,6 +69,7 @@ export default function Gerador() {
         </Pressable>
 
         <Pressable
+          testID="signout-button"
           className="border border-brand active:bg-brand-light hover:bg-brand-light p-2.5 w-[180px] rounded"
           onPress={handleSignout}
         >

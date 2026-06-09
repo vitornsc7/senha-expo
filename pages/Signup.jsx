@@ -33,12 +33,14 @@ export default function Signup() {
 
             <View className="gap-2.5 w-[220px]">
                 <TextInput
+                    testID="name-input"
                     className="border border-brand rounded p-2.5 w-full"
                     placeholder="Nome"
                     value={name}
                     onChangeText={setName}
                 />
                 <TextInput
+                    testID="email-input"
                     className="border border-brand rounded p-2.5 w-full"
                     placeholder="Email"
                     value={email}
@@ -47,6 +49,7 @@ export default function Signup() {
                     keyboardType="email-address"
                 />
                 <TextInput
+                    testID="password-input"
                     className="border border-brand rounded p-2.5 w-full"
                     placeholder="Senha"
                     value={password}
@@ -54,6 +57,7 @@ export default function Signup() {
                     secureTextEntry
                 />
                 <TextInput
+                    testID="password-confirm-input"
                     className="border border-brand rounded p-2.5 w-full"
                     placeholder="Confirmar senha"
                     value={passwordConfirm}
@@ -62,6 +66,7 @@ export default function Signup() {
                 />
 
                 <Pressable
+                    testID="signup-button"
                     className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 rounded"
                     onPress={handleSignup}
                     disabled={loading}
@@ -69,7 +74,7 @@ export default function Signup() {
                     <Text className="text-white text-center">{loading ? 'Criando...' : 'Criar conta'}</Text>
                 </Pressable>
 
-                <Pressable className="mt-1" onPress={() => navigate('/signin')}>
+                <Pressable testID="goto-signin" className="mt-1" onPress={() => navigate('/signin')}>
                     <Text className="text-brand text-center underline">Já tenho conta</Text>
                 </Pressable>
             </View>

@@ -1,0 +1,75 @@
+# Fluxo E2E Completo: end-to-end de toda a aplicação em sequência
+#
+# Executa: cadastro → login → gerar senha → ver histórico → logout.
+# Útil para smoke test em CI/CD.
+
+appId: com.projetoexposenha
+---
+- launchApp:
+    clearState: true
+
+- waitForAnimationToEnd
+
+# --- 1. Cadastro ---
+- assertVisible: "Entrar"
+- tapOn:
+    id: "goto-signup"
+- waitForAnimationToEnd
+- assertVisible: "Criar conta"
+
+- tapOn:
+    id: "name-input"
+- inputText: "Usuário Smoke Test"
+
+- tapOn:
+    id: "email-input"
+- inputText: "smoke_test@example.com"
+
+- tapOn:
+    id: "password-input"
+- inputText: "Smoke@123456"
+
+- tapOn:
+    id: "password-confirm-input"
+- inputText: "Smoke@123456"
+
+- tapOn:
+    id: "signup-button"
+- waitForAnimationToEnd
+- assertVisible: "Entrar"
+
+# --- 2. Login ---
+- runFlow:
+    file: ../subflows/do_login.yaml
+    env:
+      EMAIL: "smoke_test@example.com"
+      PASSWORD: "Smoke@123456"
+
+# --- 3. Gerar senha ---
+- tapOn:
+    id: "generate-button"
+- waitForAnimationToEnd
+- assertNotVisible: "—"
+
+# --- 4. Copiar senha ---
+- tapOn:
+    id: "copy-button"
+
+# --- 5. Ver histórico ---
+- tapOn:
+    id: "history-button"
+- waitForAnimationToEnd
+- assertVisible: "Historico de Senhas"
+- assertNotVisible: "Nenhuma senha gerada ainda."
+
+# Voltar ao gerador
+- tapOn:
+    id: "back-button"
+- waitForAnimationToEnd
+- assertVisible: "Gerador de Senha"
+
+# --- 6. Logout ---
+- tapOn:
+    id: "signout-button"
+- waitForAnimationToEnd
+- assertVisible: "Entrar"

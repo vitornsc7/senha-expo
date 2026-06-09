@@ -1,0 +1,22 @@
+# Subfluxo reutilizável: realiza login com as credenciais fornecidas.
+# Variáveis esperadas: EMAIL, PASSWORD
+# Pré-condição: tela de Signin deve estar visível.
+
+- assertVisible: "Entrar"
+
+- tapOn:
+    id: "email-input"
+- clearText
+- inputText: ${EMAIL}
+
+- tapOn:
+    id: "password-input"
+- clearText
+- inputText: ${PASSWORD}
+
+- tapOn:
+    id: "signin-button"
+
+- waitForAnimationToEnd
+
+- assertVisible: "Gerador de Senha"

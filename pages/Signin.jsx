@@ -32,6 +32,7 @@ export default function Signin() {
 
             <View className="gap-2.5 w-[220px]">
                 <TextInput
+                    testID="email-input"
                     className="border border-brand rounded p-2.5 w-full"
                     placeholder="Email"
                     value={email}
@@ -40,6 +41,7 @@ export default function Signin() {
                     keyboardType="email-address"
                 />
                 <TextInput
+                    testID="password-input"
                     className="border border-brand rounded p-2.5 w-full"
                     placeholder="Senha"
                     value={password}
@@ -48,6 +50,7 @@ export default function Signin() {
                 />
 
                 <Pressable
+                    testID="signin-button"
                     className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 rounded"
                     onPress={handleSignin}
                     disabled={loading}
@@ -55,7 +58,7 @@ export default function Signin() {
                     <Text className="text-white text-center">{loading ? 'Entrando...' : 'Entrar'}</Text>
                 </Pressable>
 
-                <Pressable className="mt-1" onPress={() => navigate('/signup')}>
+                <Pressable testID="goto-signup" className="mt-1" onPress={() => navigate('/signup')}>
                     <Text className="text-brand text-center underline">Criar conta</Text>
                 </Pressable>
             </View>

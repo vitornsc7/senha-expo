@@ -1,0 +1,29 @@
+# Fluxo E2E: Login de usuário existente
+#
+# Pré-condição: usuário criado pelo fluxo 01_signup.yaml.
+
+appId: com.projetoexposenha
+---
+- launchApp:
+    clearState: true
+
+- waitForAnimationToEnd
+- assertVisible: "Entrar"
+
+# Preencher credenciais
+- tapOn:
+    id: "email-input"
+- inputText: "teste_e2e@example.com"
+
+- tapOn:
+    id: "password-input"
+- inputText: "Senha@123456"
+
+- tapOn:
+    id: "signin-button"
+
+- waitForAnimationToEnd
+
+# Deve ir para o Gerador
+- assertVisible: "Gerador de Senha"
+- assertNotVisible: "Entrar"

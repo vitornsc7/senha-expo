@@ -1,0 +1,45 @@
+# Fluxo E2E: Visualização do histórico e exclusão de item
+#
+# Pré-condição: usuário criado pelo fluxo 01_signup.yaml.
+
+appId: com.projetoexposenha
+---
+- launchApp:
+    clearState: true
+
+- waitForAnimationToEnd
+
+# Login
+- runFlow:
+    file: ../subflows/do_login.yaml
+    env:
+      EMAIL: "teste_e2e@example.com"
+      PASSWORD: "Senha@123456"
+
+# Gerar uma senha para garantir que o histórico não está vazio
+- tapOn:
+    id: "generate-button"
+
+- waitForAnimationToEnd
+
+# Navegar para o histórico
+- tapOn:
+    id: "history-button"
+
+- waitForAnimationToEnd
+- assertVisible: "Historico de Senhas"
+
+# A lista deve conter pelo menos um item
+- assertNotVisible: "Nenhuma senha gerada ainda."
+
+# Excluir o primeiro item visível
+- tapOn: "Excluir"
+
+- waitForAnimationToEnd
+
+# Voltar para o Gerador
+- tapOn:
+    id: "back-button"
+
+- waitForAnimationToEnd
+- assertVisible: "Gerador de Senha"

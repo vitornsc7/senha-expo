@@ -25,6 +25,7 @@ export default function Historico() {
       {error ? <Text className="text-red-600 text-[13px]">{error}</Text> : null}
 
       <ScrollView
+        testID="history-list"
         className="w-[280px] max-h-[260px] border border-brand rounded-lg bg-white"
         contentContainerStyle={{ padding: 10, gap: 8 }}
       >
@@ -42,6 +43,7 @@ export default function Historico() {
                 )}
               </View>
               <Pressable
+                testID={`delete-item-${item.id}`}
                 className="bg-red-600 active:bg-red-700 hover:bg-red-700 py-1.5 px-2.5 rounded"
                 onPress={() => handleExcluir(item)}
               >
@@ -53,6 +55,7 @@ export default function Historico() {
       </ScrollView>
 
       <Pressable
+        testID="back-button"
         className="bg-brand active:bg-brand-dark hover:bg-brand-dark p-2.5 w-[180px] rounded"
         onPress={() => navigate('/')}
       >

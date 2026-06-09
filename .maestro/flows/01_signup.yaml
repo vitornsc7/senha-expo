@@ -1,0 +1,51 @@
+# Fluxo E2E: Cadastro de novo usuário
+#
+# AppId:
+#   - Expo Go (dev):        host.exp.exponent
+#   - Dev Build / Release:  com.projetoexposenha
+#
+# Pré-condição: app sem sessão ativa (clearState garante isso).
+
+appId: com.projetoexposenha
+---
+- launchApp:
+    clearState: true
+
+- waitForAnimationToEnd
+
+# Deve iniciar na tela de login
+- assertVisible: "Entrar"
+
+# Navegar para cadastro
+- tapOn:
+    id: "goto-signup"
+
+- waitForAnimationToEnd
+- assertVisible: "Criar conta"
+
+# Preencher formulário
+- tapOn:
+    id: "name-input"
+- inputText: "Usuário Teste E2E"
+
+- tapOn:
+    id: "email-input"
+- inputText: "teste_e2e@example.com"
+
+- tapOn:
+    id: "password-input"
+- inputText: "Senha@123456"
+
+- tapOn:
+    id: "password-confirm-input"
+- inputText: "Senha@123456"
+
+# Submeter
+- tapOn:
+    id: "signup-button"
+
+- waitForAnimationToEnd
+
+# Após cadastro, deve redirecionar para login
+- assertVisible: "Entrar"
+- assertNotVisible: "Criar conta"

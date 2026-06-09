@@ -1,0 +1,34 @@
+# Fluxo E2E: Logout do usuário
+#
+# Pré-condição: usuário criado pelo fluxo 01_signup.yaml.
+
+appId: com.projetoexposenha
+---
+- launchApp:
+    clearState: true
+
+- waitForAnimationToEnd
+
+# Login
+- runFlow:
+    file: ../subflows/do_login.yaml
+    env:
+      EMAIL: "teste_e2e@example.com"
+      PASSWORD: "Senha@123456"
+
+- assertVisible: "Gerador de Senha"
+
+# Realizar logout
+- tapOn:
+    id: "signout-button"
+
+- waitForAnimationToEnd
+
+# Deve retornar para a tela de login
+- assertVisible: "Entrar"
+- assertNotVisible: "Gerador de Senha"
+
+# Confirma que sessão foi encerrada: reabrir app deve manter na tela de login
+- launchApp
+- waitForAnimationToEnd
+- assertVisible: "Entrar"

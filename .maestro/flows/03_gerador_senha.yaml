@@ -1,0 +1,44 @@
+# Fluxo E2E: Geração e cópia de senha
+#
+# Pré-condição: usuário criado pelo fluxo 01_signup.yaml.
+
+appId: com.projetoexposenha
+---
+- launchApp:
+    clearState: true
+
+- waitForAnimationToEnd
+
+# Login via subfluxo reutilizável
+- runFlow:
+    file: ../subflows/do_login.yaml
+    env:
+      EMAIL: "teste_e2e@example.com"
+      PASSWORD: "Senha@123456"
+
+# Estado inicial: placeholder exibido
+- assertVisible: "Gerador de Senha"
+
+# Gerar primeira senha
+- tapOn:
+    id: "generate-button"
+
+- waitForAnimationToEnd
+
+# O placeholder "—" não deve mais aparecer
+- assertNotVisible: "—"
+- assertNotVisible: "Gerando..."
+
+# Gerar segunda senha (confirma que pode gerar múltiplas)
+- tapOn:
+    id: "generate-button"
+
+- waitForAnimationToEnd
+- assertNotVisible: "Gerando..."
+
+# Copiar senha para clipboard
+- tapOn:
+    id: "copy-button"
+
+# Confirma que ainda está na tela do Gerador
+- assertVisible: "Gerador de Senha"
